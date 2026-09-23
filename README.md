@@ -1,2 +1,3 @@
-# docassemble-MEPowerOfAttorneyAndDelegationByParentOrGuardian
-A docassemble project for TestPowerOfAttorneyAndDelegationByParentOrGuardian.
+# docassemble.MEPowerOfAttorneyAndDelegationByParentOrGuardian
+
+A docassemble extension.
