@@ -1,0 +1,2 @@
+# docassemble-MEPowerOfAttorneyAndDelegationByParentOrGuardian
+A docassemble project for TestPowerOfAttorneyAndDelegationByParentOrGuardian.
