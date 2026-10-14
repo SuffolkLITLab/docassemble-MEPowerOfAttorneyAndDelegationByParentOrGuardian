@@ -97,7 +97,7 @@ objects:
   - notary: ALPeopleList.using(ask_number=True, target_number=1)
   - other_parties: ALPeopleList.using(ask_number=True, target_number=1)
   - users: ALPeopleList.using(ask_number=True, target_number=1)
-  - witnesses: ALPeopleList.using(there_are_any=True)
+  - witnesses: ALPeopleList.using(ask_number=True, target_number=2)
 ---
 sections:
   - parties: Parties
@@ -124,13 +124,13 @@ code: |
   users1_consent_end_date
   nav.set_section('contacts')
   set_progress(22)
-  notarized_county
   set_progress(45)
   other_parties.gather()
   other_parties[0].address.address
+  notarized_county
   nav.set_section('case')
-  children[0].birthdate
   children.gather()
+  children[0].birthdate
   set_progress(68)
   if children.number() > 1:
     children[1].birthdate
@@ -150,20 +150,16 @@ id: Test Power of Attorney and Delegation by Parent or guardian intro
 continue button field: test_power_of_attorney_and_delegation_by_parent_or_guardian_intro
 question: |
   Test Power of Attorney and Delegation by Parent or guardian
-subquestion: |
-  ### IMPORTANT - PLEASE READ
-  - Please note that this form can be filled out with UP TO THREE CHILDREN
-  - Please note that this form REQUIRES TWO WITNESSES
-  
+subquestion: |2
   ### Before you get started
   - Gather the necessary information about your children and the person you want to appoint.
   - Ensure you understand the powers you are granting and the limitations.
   
   ### When you are finished
-  - Sign the document in the presence of witnesses and a notary public.
+  - Sign the document in the presence of two witnesses and a notary public.
   - Provide copies to the appointed agent and any relevant institutions (like schools or healthcare providers).
   
-  If you're a parent or guardian in Maine and need someone else to care for your children temporarily, this form is for you. It grants your chosen agent the authority to make decisions about your children's health, education, and general welfare.
+  If you are a parent or guardian in Maine and need someone else to care for your children temporarily, this form is for you. It grants your chosen agent the authority to make decisions about your children's health, education, and general welfare.
 ---
 id: Power of Attorney Details
 question: "Signature & Consent Details"
@@ -188,8 +184,8 @@ fields:
 id: Notarization Details
 question: |
   Notarization Details
-subquestion: |
-  Provide the county where the notarization took place.
+subquestion: |2
+  County where the notarization will take place.
 fields:
   - "County of notarization": notarized_county
 ---
@@ -334,15 +330,8 @@ question: |
 subquestion: |
   Enter full names of witnesses
 fields:
-  - full name of witness one: witnesses1_name_full
-  - full name of witness two: witnesses2_name_full
----
-id: another witness
-question: |
-  Is there another witness to tell us about?
-fields:
-  - no label: witnesses.there_is_another
-    datatype: yesnoradio
+  - Full name of witness one: witnesses1_name_full
+  - Full name of witness two: witnesses2_name_full
 ---
 id: preview test_power_of_attorney_and_delegation_by_parent_or_guardian
 question: |
@@ -591,13 +580,13 @@ progress: 100
 ---
 # ALDocument objects specify the metadata for each template
 objects:
-  - test_power_of_attorney_and_delegation_by_parent_or_guardian_Post_interview_instructions: ALDocument.using(filename="test_power_of_attorney_and_delegation_by_parent_or_guardian_next_steps.docx", enabled=al_next_steps_enabled, has_addendum=False)
+  - test_power_of_attorney_and_delegation_by_parent_or_guardian_Post_interview_instructions: ALDocument.using(filename="WORKINGtest_power_of_attorney_and_delegation_by_parent_or_guardian_next_steps.docx", enabled=al_next_steps_enabled, has_addendum=False)
   - test_power_of_attorney_and_delegation_by_parent_or_guardian_attachment: ALDocument.using(filename="test_power_of_attorney_and_delegation_by_parent_or_guardian", enabled=True, has_addendum=False)
 ---
 # Bundles group the ALDocuments into separate downloads, such as for court and for the user
 objects:
-  - al_user_bundle: ALDocumentBundle.using(elements=[test_power_of_attorney_and_delegation_by_parent_or_guardian_Post_interview_instructions, test_power_of_attorney_and_delegation_by_parent_or_guardian_attachment], filename="test_power_of_attorney_and_delegation_by_parent_or_guardian", enabled=True)
-  - al_recipient_bundle: ALDocumentBundle.using(elements=[test_power_of_attorney_and_delegation_by_parent_or_guardian_attachment], filename="test_power_of_attorney_and_delegation_by_parent_or_guardian", enabled=True)
+  - al_user_bundle: ALDocumentBundle.using(elements=[test_power_of_attorney_and_delegation_by_parent_or_guardian_Post_interview_instructions, test_power_of_attorney_and_delegation_by_parent_or_guardian_attachment, WORKINGtest_power_of_attorney_and_delegation_by_parent_or_guardian_next_steps], filename="test_power_of_attorney_and_delegation_by_parent_or_guardian", enabled=True)
+  - al_recipient_bundle: ALDocumentBundle.using(elements=[test_power_of_attorney_and_delegation_by_parent_or_guardian_attachment, WORKINGtest_power_of_attorney_and_delegation_by_parent_or_guardian_next_steps], filename="test_power_of_attorney_and_delegation_by_parent_or_guardian", enabled=True)
 ---
 template: test_power_of_attorney_and_delegation_by_parent_or_guardian_Post_interview_instructions.title
 content: |
@@ -620,8 +609,8 @@ content: |
 # the value of `i` to show or hide the user's signature
 attachment:
   name: Post-interview-Instructions
-  filename: test_power_of_attorney_and_delegation_by_parent_or_guardian_next_steps
-  docx template file: test_power_of_attorney_and_delegation_by_parent_or_guardian_next_steps.docx
+  filename: WORKINGtest_power_of_attorney_and_delegation_by_parent_or_guardian_next_steps
+  docx template file: WORKINGtest_power_of_attorney_and_delegation_by_parent_or_guardian_next_steps.docx
   variable name: test_power_of_attorney_and_delegation_by_parent_or_guardian_Post_interview_instructions[i]
   skip undefined: True
   tagged pdf: True
@@ -661,3 +650,35 @@ attachment:
       - "witnesses2_address_line2": ${ witnesses2_address_line2 }
       - "notarized_county": ${ notarized_county }
       - "notary_signature": ${ notary[0].signature_if_final(i) }
+---
+objects:
+  - WORKINGtest_power_of_attorney_and_delegation_by_parent_or_guardian_next_steps: ALDocument.using(filename="WORKINGtest_power_of_attorney_and_delegation_by_parent_or_guardian_next_steps", title=str(WORKINGtest_power_of_attorney_and_delegation_by_parent_or_guardian_next_steps_attachment_title), enabled=True, has_addendum=False)
+---
+template: WORKINGtest_power_of_attorney_and_delegation_by_parent_or_guardian_next_steps_attachment_title
+content: |
+  Workingtest power of attorney and delegation by parent or guardian next steps
+---
+# ALWeaver DOCX template field manifest: ["al_next_steps_document_title", "al_next_steps_enabled", "al_next_steps_generate_qr_code", "al_next_steps_help_organization", "al_next_steps_help_url", "al_next_steps_intro_prompt", "al_next_steps_what_can_decision_maker_do", "al_next_steps_what_happens_if_i_win", "al_next_steps_what_happens_next", "alt_text", "p", "width"]
+# Each attachment defines a key in an ALDocument. We use `i` as the placeholder here so the
+# same template is used for "preview" and "final" keys, and logic in the template checks
+# the value of `i` to show or hide the user's signature
+attachment:
+  name: workingtest power of attorney and delegation by parent or guardian next steps
+  filename: WORKINGtest_power_of_attorney_and_delegation_by_parent_or_guardian_next_steps
+  variable name: WORKINGtest_power_of_attorney_and_delegation_by_parent_or_guardian_next_steps[i]
+  skip undefined: True
+  docx template file: WORKINGtest_power_of_attorney_and_delegation_by_parent_or_guardian_next_steps.docx
+  tagged pdf: True
+---
+id: P
+question: |
+  P
+fields:
+  - "P": p
+  - "Width": width
+---
+id: Alt text
+question: |
+  Alt text
+fields:
+  - "Alt text": alt_text
