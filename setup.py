@@ -53,7 +53,7 @@ setup(name='docassemble.MEPowerOfAttorneyAndDelegationByParentOrGuardian',
       license='MIT License',
       url='https://docassemble.org',
       packages=find_namespace_packages(),
-      install_requires=['docassemble.ALAnyState @ git+https://github.com/SuffolkLITLab/docassemble-ALAnyState.git@main', 'docassemble.AssemblyLine @ git+https://github.com/SuffolkLITLab/docassemble-AssemblyLine.git@main'],
+      install_requires=['docassemble.AssemblyLine @ git+https://github.com/SuffolkLITLab/docassemble-AssemblyLine.git@main', 'docassemble.LITLabTheme @ git+https://github.com/SuffolkLITLab/docassemble-LITLabTheme.git@main'],
       zip_safe=False,
       package_data=find_package_data(where='docassemble/MEPowerOfAttorneyAndDelegationByParentOrGuardian/', package='docassemble.MEPowerOfAttorneyAndDelegationByParentOrGuardian'),
      )

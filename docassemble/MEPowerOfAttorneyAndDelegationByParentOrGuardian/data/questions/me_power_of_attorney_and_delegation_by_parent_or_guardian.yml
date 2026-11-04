@@ -1,7 +1,7 @@
 ---
 include:
   - docassemble.AssemblyLine:assembly_line.yml
-  - docassemble.ALAnyState:any_state.yml
+  - docassemble.LITLabTheme:main.yml
 ---
 metadata:
   title: >-
@@ -93,7 +93,7 @@ code: |
   al_next_steps_what_happens_if_i_win = "If your appointed agent successfully manages your children's care, it ensures their needs are met while you are unable to fulfill your parental responsibilities. You maintain the right to revoke the power at any time."
 ---
 objects:
-  - al_logo: DAStaticFile.using(filename="lit_logo_light.png")
+  #- al_logo: DAStaticFile.using(filename="lit_logo_light.png")
   - children: ALPeopleList.using(ask_number=True)
   - notary: ALPeopleList.using(ask_number=True, target_number=1)
   - other_parties: ALPeopleList.using(ask_number=True, target_number=1)

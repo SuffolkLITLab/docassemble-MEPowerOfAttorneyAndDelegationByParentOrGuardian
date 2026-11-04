@@ -13,8 +13,8 @@ authors = [
     { name = "peter.santeusanio@su.suffolk.edu", email = "peter.santeusanio@su.suffolk.edu" },
 ]
 dependencies = [
-    "docassemble.ALAnyState @ git+https://github.com/SuffolkLITLab/docassemble-ALAnyState@main",
     "docassemble.AssemblyLine @ git+https://github.com/SuffolkLITLab/docassemble-AssemblyLine.git@main",
+    "docassemble.LITLabTheme @ git+https://github.com/SuffolkLITLab/docassemble-LITLabTheme@main",
 ]
 license = "MIT"
 license-files = [
