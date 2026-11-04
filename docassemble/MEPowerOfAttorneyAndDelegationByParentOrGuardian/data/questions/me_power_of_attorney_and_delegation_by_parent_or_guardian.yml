@@ -53,7 +53,7 @@ metadata:
   jurisdiction: "NAM-US-US+ME"
   review_date: 2026-09-22
   form_titles:
-    - Test Power of Attorney and Delegation by Parent or guardian
+    - Power of Attorney and Delegation by Parent or guardian
   form_numbers: []
   update_notes: ""
 ---
@@ -82,7 +82,7 @@ code: |
   # are editable in Weaver's AssemblyLine settings panel.
   al_next_steps_enabled = True
   al_next_steps_intro_prompt = 'Set up a Power of Attorney for your children'
-  al_next_steps_title = 'Test Power of Attorney and Delegation by Parent or guardian'
+  al_next_steps_title = 'Power of Attorney and Delegation by Parent or guardian'
   al_next_steps_document_title = 'Power of Attorney'
   al_next_steps_document_purpose = 'Delegation'
   al_next_steps_help_organization = 'Pine Tree Legal Assistance'
@@ -93,7 +93,7 @@ code: |
   al_next_steps_what_happens_if_i_win = "If your appointed agent successfully manages your children's care, it ensures their needs are met while you are unable to fulfill your parental responsibilities. You maintain the right to revoke the power at any time."
 ---
 objects:
-  - children: ALPeopleList.using(there_are_any=True)
+  - children: ALPeopleList.using(ask_number=True)
   - notary: ALPeopleList.using(ask_number=True, target_number=1)
   - other_parties: ALPeopleList.using(ask_number=True, target_number=1)
   - users: ALPeopleList.using(ask_number=True, target_number=1)
@@ -129,6 +129,8 @@ code: |
 
   nav.set_section('case')
   users1_consent_end_date
+  if users1_consent_end_date < today():
+    consent_end_date_past_warning
   if users1_consent_end_date > today().plus(years=1):
     consent_end_date_warning
   children.gather()
@@ -150,10 +152,10 @@ code: |
   if signature_method == "digital":
     users1_signature_date_day = today().format_date("MMM d")
     users1_signature_date_year = today().format_date("yy")
-    witnesses[0].name.first
-    witnesses1_address_line1
+    witnesses.gather()
+    witnesses[0].address.address
     witnesses[1].name.first  
-    witnesses2_address_line1
+    witnesses[1].address.address
     notary.gather()
     notarized_county
   else:
@@ -201,6 +203,17 @@ question: "Please review the end date"
 subquestion: |
   The end date you selected is more than one year from today. Under Maine law, you cannot delegate authority for more than a year from the date of signing this form. You can go back and change the date if needed.
 ---
+id: Consent end date past warning
+continue button field: consent_end_date_past_warning
+question: |
+  Please review the end date
+subquestion: |
+  The end date you selected is before today's date.
+
+  The consent period cannot end before the date you sign this form.
+
+  Please go back and correct the end date before continuing. 
+---
 id: Child 1 over 18 warning
 continue button field: child1_over_18_warning
 question: |
@@ -235,22 +248,32 @@ subquestion: |
   You may continue, but please confirm that this is the correct form for your situation.
 ---
 id: Witness One Address
+sets:
+ - witnesses[0].address.address
+ - witnesses[0].address.city
+ - witnesses[0].address.state
+ - witnesses[0].address.zip
+ - witnesses[0].address.unit
+ - witnesses[0].address.country 
 question: |
   What is ${ witnesses[0] }'s address?
-subquestion: |
-  Enter the addresses of your first witnesses.
 fields:
-  - Street address: witnesses1_address_line1
-  - City and state: witnesses1_address_line2
+  - code: |
+      witnesses[0].address_fields(country_code=AL_DEFAULT_COUNTRY, default_state=AL_DEFAULT_STATE)
 ---
 id: Witness Two Address
+sets:
+ - witnesses[1].address.address
+ - witnesses[1].address.city
+ - witnesses[1].address.state
+ - witnesses[1].address.zip
+ - witnesses[1].address.unit
+ - witnesses[1].address.country 
 question: |
-  What is ${ witnesses[1] }'s address
-subquestion: |
-  Enter the address of your second witness.
+  What is ${ witnesses[1] }'s address?
 fields:
-  - Street address: witnesses2_address_line1
-  - City and state: witnesses2_address_line2
+  - code: |
+      witnesses[1].address_fields(country_code=AL_DEFAULT_COUNTRY, default_state=AL_DEFAULT_STATE)
 ---
 id: name of witness one
 sets:
@@ -290,7 +313,11 @@ question: |
 subquestion: |
   Choose how you would like your completed Power of Attorney document prepared.
 
-  You can either provide your signature electronically or download a completed form with the signature fields left blank.
+  **Witnesses and notarization**
+
+  You must sign the form in the presence of two witnesses and a notary public. The witnesses observe your signature and the notary public acknowledges it.
+
+  Choosing electronic signing does not eliminate these requirements. You will still need to complete the witness and notary signatures.
 fields:
   - no label: signature_method
     datatype: radio
@@ -305,6 +332,19 @@ comment: |
   ql_baseline.yml, rewritten to name this interview's own objects instead of the
   generic `x`. Edit them freely: they replace the AssemblyLine versions. Delete
   one to go back to the AssemblyLine wording.
+---
+id: number of children
+question: |
+  How many children are you including on this form?
+subquestion: |
+  You may include up to three children.
+fields:
+  - no label: children.target_number
+    datatype: radio
+    choices:
+      - 1
+      - 2
+      - 3
 ---
 id: children names
 sets:
@@ -321,13 +361,6 @@ question: |
 fields:
   - code: |
       children[i].name_fields()
----
-id: another child
-question: |
-  Is there another child to tell us about?
-fields:
-  - no label: children.there_is_another
-    datatype: yesnoradio
 ---
 id: other parties names
 sets:
@@ -488,23 +521,20 @@ review:
         * ${ item }
       % endfor
 
-  - Edit: users1_consent_end_date
+  - Edit: 
+      - other_parties[0].name.first
+      - other_parties[0].address.address
+      - users1_consent_end_date
     button: |
       **Power of Attorney Details**
 
-      Appointed agent: ${ other_parties[0] }
+      **Appointed agent:** ${ other_parties[0] }
 
-      End date of authority: ${ showifdef('users1_consent_end_date') }
+      **Address:** ${ other_parties[0].address.block() }
 
-      Signature date: ${ showifdef('users1_signature_date_day') } / ${ showifdef('users1_signature_date_year') }
+      **End date of authority:** ${ showifdef('users1_consent_end_date') }
 
-  - Edit: other_parties.revisit
-    button: |
-      **Appointed Agent**
-
-      % for item in other_parties:
-        * ${ item }
-      % endfor
+      **Signature date:** ${ showifdef('users1_signature_date_day') } / ${ showifdef('users1_signature_date_year') }
 
   - Edit: children.revisit
     button: |
@@ -526,26 +556,9 @@ review:
       **Witnesses**
 
       % for item in witnesses:
-        * ${ item }
+        * **${ item }**
+          ${ item.address.block() }
       % endfor
-
-  - Edit: witnesses1_address_line1
-    show if: signature_method == "digital"
-    button: |
-      **First Witness Address**
-
-      ${ showifdef('witnesses1_address_line1') }
-
-      ${ showifdef('witnesses1_address_line2') }
-
-  - Edit: witnesses2_address_line1
-    show if: signature_method == "digital"
-    button: |
-      **Second Witness Address**
-
-      ${ showifdef('witnesses2_address_line1') }
-
-      ${ showifdef('witnesses2_address_line2') }
 
   - Edit: notary.revisit
     show if: signature_method == "digital"
@@ -644,8 +657,15 @@ columns:
       row_item.signature if defined("row_item.signature") else ""
   - Name: |
       row_item.name_full() if defined("row_item.name.first") else ""
+  - Address: |
+      row_item.address.block() if defined("row_item.address.address") else ""
 edit:
   - name.first
+  - address.address
+  - address.unit
+  - address.city
+  - address.state
+  - address.zip
 confirm: True
 ---
 id: edit notary
@@ -668,7 +688,7 @@ confirm: True
 id: download power_of_attorney_and_delegation_by_parent_or_guardian
 event: power_of_attorney_and_delegation_by_parent_or_guardian_download
 question: |
-  All done
+  Almost done
 subquestion: |
   Thank you ${users}. Your form is ready to download and deliver.
 
@@ -699,7 +719,7 @@ content: |
 ---
 template: power_of_attorney_and_delegation_by_parent_or_guardian_attachment.title
 content: |
-  Test Power of Attorney and Delegation by Parent or guardian
+  Power of Attorney and Delegation by Parent or guardian
 ---
 template: al_user_bundle.title
 content: |
@@ -721,7 +741,7 @@ attachment:
   tagged pdf: True
 ---
 attachment:
-  name: test power of attorney and delegation by parent or guardian
+  name: Power of attorney and delegation by parent or guardian
   filename: power_of_attorney_and_delegation_by_parent_or_guardian
   variable name: power_of_attorney_and_delegation_by_parent_or_guardian_attachment[i]
   skip undefined: True
@@ -749,10 +769,10 @@ attachment:
       - "witnesses2_signature": ${ witnesses[1].signature_if_final(i) if signature_method == "digital" else "" }
       - "witnesses1_name_full": ${ witnesses[0] if signature_method == "digital" else "" }
       - "witnesses2_name_full": ${ witnesses[1] if signature_method == "digital" else "" }
-      - "witnesses1_address_line1": ${ witnesses1_address_line1 if signature_method == "digital" else "" }
-      - "witnesses2_address_line1": ${ witnesses2_address_line1 if signature_method == "digital" else "" }
-      - "witnesses1_address_line2": ${ witnesses1_address_line2 if signature_method == "digital" else ""}
-      - "witnesses2_address_line2": ${ witnesses2_address_line2 if signature_method == "digital" else "" }
+      - "witnesses1_address_line1": ${ witnesses[0].address.address if signature_method == "digital" else "" }
+      - "witnesses2_address_line1": ${ witnesses[1].address.address if signature_method == "digital" else "" }
+      - "witnesses1_address_line2": ${ witnesses[0].address.city + ", " + witnesses[0].address.state + " " + witnesses[0].address.zip if signature_method == "digital" else ""}
+      - "witnesses2_address_line2": ${ witnesses[1].address.city + ", " + witnesses[1].address.state + " " + witnesses[1].address.zip if signature_method == "digital" else "" }
       - "notarized_county": ${ notarized_county if signature_method == "digital" else "" }
       - "notary_signature": ${ notary[0].signature_if_final(i) if signature_method == "digital" else "" }
 ---
