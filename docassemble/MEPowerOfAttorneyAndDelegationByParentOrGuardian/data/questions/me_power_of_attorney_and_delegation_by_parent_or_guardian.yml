@@ -53,7 +53,7 @@ metadata:
   jurisdiction: "NAM-US-US+ME"
   review_date: 2026-09-22
   form_titles:
-    - Power of Attorney and Delegation by Parent or guardian
+    - Power of Attorney and Delegation by Parent or Guardian
   form_numbers: []
   update_notes: ""
 ---
@@ -116,6 +116,7 @@ mandatory: True
 code: |
   al_intro_screen
   power_of_attorney_and_delegation_by_parent_or_guardian_intro
+  person_completing_capacity
   user_role = "plaintiff"
   user_ask_role = "plaintiff"
 
@@ -190,6 +191,20 @@ subquestion: |2+
   - Sign the document in the presence of two witnesses and a notary public.
   - Provide copies to the appointed agent and any relevant institutions (like schools or healthcare providers).
   
+---
+id: Parent or Court Appointed Guardian
+question: | 
+  Which best describes your role?
+subquestion: |
+  Identify the capacity in which you are completing this form.
+fields:
+ - no label: person_completing_capacity
+   datatype: radio
+   choices:
+    - label: Parent
+      value: parent
+    - label: Court-appointed guardian
+      value: guardian
 ---
 id: Power of Attorney Details
 question: "Signature & Consent Details"
@@ -697,6 +712,10 @@ question: |
 subquestion: |
   Thank you ${users}. Your form is ready to download and deliver.
 
+  %if person_completing_capacity == "guardian":
+  **Important:** Because you are a court-appointed guardian, you must file this Power of Attorney with the court that appointed you. The delegation does not take legal effect until it is filed with the court.
+  %endif
+  
   Use the options on this page to view, download and send your form. Use the
   "Edit answers" button to fix any mistakes.
 
