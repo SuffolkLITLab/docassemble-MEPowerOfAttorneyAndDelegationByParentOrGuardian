@@ -646,8 +646,6 @@ question: |
   Edit children
 subquestion: |
   ${ children.table }
-
-  ${ children.add_action() }
 ---
 table: children.table
 rows: children
