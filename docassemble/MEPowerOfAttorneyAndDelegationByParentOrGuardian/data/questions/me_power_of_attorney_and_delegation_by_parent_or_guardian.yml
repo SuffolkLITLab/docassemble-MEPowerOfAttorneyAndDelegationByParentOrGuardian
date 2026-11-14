@@ -603,7 +603,9 @@ question: |
 subquestion: |
   ${ users.table }
 
+  % if users.number_gathered() < 1:
   ${ users.add_action() }
+  % endif
 ---
 table: users.table
 rows: users
@@ -626,7 +628,9 @@ question: |
 subquestion: |
   ${ other_parties.table }
 
+  % if other_parties.number_gathered() < 1:
   ${ other_parties.add_action() }
+  % endif
 ---
 table: other_parties.table
 rows: other_parties
@@ -666,7 +670,9 @@ question: |
 subquestion: |
   ${ witnesses.table }
 
+  % if witnesses.number_gathered() < 2:
   ${ witnesses.add_action() }
+  % endif
 ---
 table: witnesses.table
 rows: witnesses
@@ -693,7 +699,9 @@ question: |
 subquestion: |
   ${ notary.table }
 
+  % if notary.number_gathered() < 1:
   ${ notary.add_action() }
+  % endif
 ---
 table: notary.table
 rows: notary
