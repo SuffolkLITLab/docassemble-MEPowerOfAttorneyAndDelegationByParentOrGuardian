@@ -4,6 +4,7 @@ include:
   - docassemble.LITLabTheme:main.yml
 ---
 metadata:
+  asklit_id: "0843ea59b80a4144a6c6dd664688e358"
   title: >-
     Power of Attorney and Delegation by Parent or guardian
   short title: >-
